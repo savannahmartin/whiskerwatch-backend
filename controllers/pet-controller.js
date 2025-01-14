@@ -18,9 +18,11 @@ export const getPetById = async (req, res) => {
 	try {
 		const { petId } = req.params;
 		const pet = await db("pets").where({ id: petId }).first();
+
 		if (!pet) {
 			return res.status(404).json({ message: "Pet not found" });
 		}
+
 		res.json(pet);
 	} catch (error) {
 		res.status(500).json({ message: "Error fetching pet" });
@@ -31,12 +33,16 @@ export const getPetById = async (req, res) => {
 export const addPet = async (req, res) => {
 	try {
 		const { name, species, breed, age } = req.body;
+
 		if (!name) {
 			return res.status(400).json({ message: "Name is required" });
 		}
-		const [newPet] = await db("pets")
-			.insert({ name, species, breed, age })
-			.returning("*");
+
+		const [newPetId] = await db("pets").insert({ name, species, breed, age });
+
+		// Fetch the newly inserted pet
+		const newPet = await db("pets").where({ id: newPetId }).first();
+
 		res.status(201).json(newPet);
 	} catch (error) {
 		res.status(500).json({ message: "Error adding pet" });
@@ -48,16 +54,19 @@ export const updatePet = async (req, res) => {
 	try {
 		const { petId } = req.params;
 		const { name, species, breed, age } = req.body;
+
 		const pet = await db("pets").where({ id: petId }).first();
 
 		if (!pet) {
 			return res.status(404).json({ message: "Pet not found" });
 		}
 
-		const updatedPet = await db("pets")
+		await db("pets")
 			.where({ id: petId })
-			.update({ name, species, breed, age })
-			.returning("*");
+			.update({ name, species, breed, age });
+
+		// Fetch the updated pet
+		const updatedPet = await db("pets").where({ id: petId }).first();
 
 		res.json(updatedPet);
 	} catch (error) {
@@ -69,6 +78,7 @@ export const updatePet = async (req, res) => {
 export const deletePet = async (req, res) => {
 	try {
 		const { petId } = req.params;
+
 		const result = await db("pets").where({ id: petId }).del();
 
 		if (!result) {
