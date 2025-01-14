@@ -12,8 +12,8 @@ app.use(cors());
 
 const PORT = process.env.PORT || 5050;
 
-app.use("/api/pets", petRoutes);
-app.use("/api/behaviors", behaviorRoutes);
+app.use("/pets", petRoutes);
+app.use("/behaviors", behaviorRoutes);
 
 app.get("/", (req, res) => {
 	res.send("Whisker Watch API is running!");
