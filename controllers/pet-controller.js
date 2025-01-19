@@ -75,7 +75,6 @@ export const updatePet = async (req, res) => {
 	}
 };
 
-
 // Archive a pet
 export const archivePet = async (req, res) => {
 	try {
