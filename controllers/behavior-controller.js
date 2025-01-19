@@ -6,12 +6,21 @@ const db = knex(knexConfig.development);
 // Get all behaviors
 export const getAllBehaviors = async (req, res) => {
 	try {
-		const behaviors = await db("behaviors").select("*");
+		const behaviors = await db("behaviors")
+			.join("pets", "behaviors.pet_id", "pets.id")
+			.select(
+				"behaviors.id",
+				"pets.name as pet_name",
+				"behaviors.description",
+				db.raw("DATE(behaviors.date) as date")
+			);
+
 		res.json(behaviors);
 	} catch (error) {
 		res.status(500).json({ message: "Error fetching all behaviors" });
 	}
 };
+
 
 // Get behaviors for a specific pet
 export const getBehaviorsByPet = async (req, res) => {
@@ -72,7 +81,7 @@ export const addBehavior = async (req, res) => {
 export const updateBehavior = async (req, res) => {
 	try {
 		const { behaviorId } = req.params;
-		const { description, date, time } = req.body;
+		const { description, date } = req.body;
 
 		const behavior = await db("behaviors")
 			.where({ id: behaviorId })
@@ -83,7 +92,7 @@ export const updateBehavior = async (req, res) => {
 
 		await db("behaviors")
 			.where({ id: behaviorId })
-			.update({ description, date, time });
+			.update({ description, date });
 
 		// Fetch the updated behavior
 		const updatedBehavior = await db("behaviors")
