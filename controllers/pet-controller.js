@@ -3,15 +3,16 @@ import knexConfig from "../knexfile.js";
 
 const db = knex(knexConfig.development);
 
-// Get all pets
+// Get all active pets
 export const getAllPets = async (req, res) => {
 	try {
-		const pets = await db("pets").select("*");
+		const pets = await db("pets").where({ status: "active" }).select("*");
 		res.json(pets);
 	} catch (error) {
 		res.status(500).json({ message: "Error fetching pets" });
 	}
 };
+
 
 // Get a single pet by ID
 export const getPetById = async (req, res) => {
@@ -74,19 +75,33 @@ export const updatePet = async (req, res) => {
 	}
 };
 
-// Delete a pet
-export const deletePet = async (req, res) => {
+// Archive a pet
+export const archivePet = async (req, res) => {
 	try {
 		const { petId } = req.params;
 
-		const result = await db("pets").where({ id: petId }).del();
-
-		if (!result) {
+		// Check if the pet exists
+		const pet = await db("pets").where({ id: petId }).first();
+		if (!pet) {
 			return res.status(404).json({ message: "Pet not found" });
 		}
 
-		res.status(204).send();
+		// Update pet status to "archived"
+		await db("pets").where({ id: petId }).update({ status: "archived" });
+
+		res.json({ message: "Pet archived successfully" });
 	} catch (error) {
-		res.status(500).json({ message: "Error deleting pet" });
+		res.status(500).json({ message: "Error archiving pet" });
 	}
 };
+
+// Get all archived pets
+export const getArchivedPets = async (req, res) => {
+	try {
+		const pets = await db("pets").where({ status: "archived" }).select("*");
+		res.json(pets);
+	} catch (error) {
+		res.status(500).json({ message: "Error fetching archived pets" });
+	}
+};
+

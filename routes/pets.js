@@ -5,10 +5,13 @@ const router = express.Router();
 
 router.route("/").get(petController.getAllPets).post(petController.addPet);
 
+router.route("/archived")
+	.get(petController.getArchivedPets);
+
 router
 	.route("/:petId")
 	.get(petController.getPetById)
 	.put(petController.updatePet)
-	.delete(petController.deletePet);
+	.delete(petController.archivePet);
 
 export default router;
