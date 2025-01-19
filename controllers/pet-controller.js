@@ -13,7 +13,6 @@ export const getAllPets = async (req, res) => {
 	}
 };
 
-
 // Get a single pet by ID
 export const getPetById = async (req, res) => {
 	try {
@@ -86,10 +85,11 @@ export const archivePet = async (req, res) => {
 			return res.status(404).json({ message: "Pet not found" });
 		}
 
-		// Update pet status to "archived"
+		// Archive the pet and its behaviors
 		await db("pets").where({ id: petId }).update({ status: "archived" });
+		await db("behaviors").where({ pet_id: petId }).update({ status: "archived" });
 
-		res.json({ message: "Pet archived successfully" });
+		res.json({ message: "Pet and its behaviors have been archived." });
 	} catch (error) {
 		res.status(500).json({ message: "Error archiving pet" });
 	}

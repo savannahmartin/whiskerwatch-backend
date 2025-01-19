@@ -7,12 +7,13 @@ const db = knex(knexConfig.development);
 export const getAllBehaviors = async (req, res) => {
 	try {
 		const behaviors = await db("behaviors")
+			.where({ status: "active" }) // Filter out archived behaviors
 			.join("pets", "behaviors.pet_id", "pets.id")
 			.select(
 				"behaviors.id",
 				"pets.name as pet_name",
 				"behaviors.description",
-				db.raw("DATE(behaviors.date) as date")
+				"behaviors.date"
 			);
 
 		res.json(behaviors);
@@ -21,13 +22,12 @@ export const getAllBehaviors = async (req, res) => {
 	}
 };
 
-
 // Get behaviors for a specific pet
 export const getBehaviorsByPet = async (req, res) => {
 	try {
 		const { petId } = req.params;
 		const behaviors = await db("behaviors")
-			.where({ pet_id: petId })
+			.where({ pet_id: petId, status: "active" }) // Only active behaviors
 			.select("*");
 		res.json(behaviors);
 	} catch (error) {
