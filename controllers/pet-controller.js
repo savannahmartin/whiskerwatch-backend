@@ -33,13 +33,13 @@ export const getPetById = async (req, res) => {
 // Add a pet
 export const addPet = async (req, res) => {
 	try {
-		const { name, species, breed, age } = req.body;
+		const { name, species, breed, age, notes } = req.body;
 
 		if (!name) {
 			return res.status(400).json({ message: "Name is required" });
 		}
 
-		const [newPetId] = await db("pets").insert({ name, species, breed, age });
+		const [newPetId] = await db("pets").insert({ name, species, breed, age, notes });
 
 		// Fetch the newly inserted pet
 		const newPet = await db("pets").where({ id: newPetId }).first();
@@ -54,7 +54,7 @@ export const addPet = async (req, res) => {
 export const updatePet = async (req, res) => {
 	try {
 		const { petId } = req.params;
-		const { name, species, breed, age } = req.body;
+		const { name, species, breed, age, notes } = req.body;
 
 		const pet = await db("pets").where({ id: petId }).first();
 
@@ -64,7 +64,7 @@ export const updatePet = async (req, res) => {
 
 		await db("pets")
 			.where({ id: petId })
-			.update({ name, species, breed, age });
+			.update({ name, species, breed, age, notes });
 
 		// Fetch the updated pet
 		const updatedPet = await db("pets").where({ id: petId }).first();
@@ -74,6 +74,7 @@ export const updatePet = async (req, res) => {
 		res.status(500).json({ message: "Error updating pet" });
 	}
 };
+
 
 // Archive a pet
 export const archivePet = async (req, res) => {
