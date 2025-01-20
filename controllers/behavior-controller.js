@@ -7,20 +7,23 @@ const db = knex(knexConfig.development);
 export const getAllBehaviors = async (req, res) => {
 	try {
 		const behaviors = await db("behaviors")
-			.where({ status: "active" }) // Filter out archived behaviors
-			.join("pets", "behaviors.pet_id", "pets.id")
+			.join("pets", "behaviors.pet_id", "pets.id") // First join
 			.select(
 				"behaviors.id",
 				"pets.name as pet_name",
 				"behaviors.description",
-				"behaviors.date"
-			);
+				"behaviors.date",
+				"behaviors.status" // Ensure we fetch status
+			)
+			.where("behaviors.status", "active"); // Filter after join
 
 		res.json(behaviors);
 	} catch (error) {
+		console.error("Error fetching behaviors:", error);
 		res.status(500).json({ message: "Error fetching all behaviors" });
 	}
 };
+
 
 // Get behaviors for a specific pet
 export const getBehaviorsByPet = async (req, res) => {
@@ -40,8 +43,15 @@ export const getBehaviorById = async (req, res) => {
 	try {
 		const { behaviorId } = req.params;
 		const behavior = await db("behaviors")
-			.where({ id: behaviorId })
-			.first();
+		.join("pets", "behaviors.pet_id", "pets.id")
+		.select(
+			"behaviors.id",
+			"behaviors.description",
+			"behaviors.date",
+			"pets.name as pet_name"
+		)
+		.where("behaviors.id", behaviorId)
+		.first();
 
 		if (!behavior) {
 			return res.status(404).json({ message: "Behavior not found" });
