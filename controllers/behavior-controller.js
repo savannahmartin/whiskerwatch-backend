@@ -24,7 +24,6 @@ export const getAllBehaviors = async (req, res) => {
 	}
 };
 
-
 // Get behaviors for a specific pet
 export const getBehaviorsByPet = async (req, res) => {
 	try {
