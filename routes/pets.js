@@ -12,6 +12,8 @@ router
 	.route("/:petId")
 	.get(petController.getPetById)
 	.put(petController.updatePet)
-	.delete(petController.archivePet);
+
+router.put("/:petId/archive", petController.archivePet);
+
 
 export default router;
