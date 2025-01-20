@@ -7,15 +7,15 @@ const db = knex(knexConfig.development);
 export const getAllBehaviors = async (req, res) => {
 	try {
 		const behaviors = await db("behaviors")
-			.join("pets", "behaviors.pet_id", "pets.id") // First join
+			.join("pets", "behaviors.pet_id", "pets.id")
 			.select(
 				"behaviors.id",
 				"pets.name as pet_name",
 				"behaviors.description",
 				"behaviors.date",
-				"behaviors.status" // Ensure we fetch status
+				"behaviors.status" 
 			)
-			.where("behaviors.status", "active"); // Filter after join
+			.where("behaviors.status", "active");
 
 		res.json(behaviors);
 	} catch (error) {
@@ -29,7 +29,7 @@ export const getBehaviorsByPet = async (req, res) => {
 	try {
 		const { petId } = req.params;
 		const behaviors = await db("behaviors")
-			.where({ pet_id: petId, status: "active" }) // Only active behaviors
+			.where({ pet_id: petId, status: "active" })
 			.select("*");
 		res.json(behaviors);
 	} catch (error) {
@@ -67,16 +67,13 @@ export const addBehavior = async (req, res) => {
 	try {
 		const { pet_id, description, date } = req.body;
 
-		// Log the received data
 		console.log("Received data:", { pet_id, description, date });
 
-		// Ensure all required fields are present
 		if (!pet_id || !description || !date) {
 			console.error("Missing required fields");
 			return res.status(400).json({ message: "All fields are required" });
 		}
 
-		// Insert the behavior into the database
 		await db("behaviors").insert({ pet_id, description, date });
 
 		res.status(201).json({ message: "Behavior added successfully" });
@@ -103,7 +100,6 @@ export const updateBehavior = async (req, res) => {
 			.where({ id: behaviorId })
 			.update({ description, date });
 
-		// Fetch the updated behavior
 		const updatedBehavior = await db("behaviors")
 			.where({ id: behaviorId })
 			.first();
