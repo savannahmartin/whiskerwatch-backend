@@ -1,3 +1,5 @@
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import knex from "knex";
 import knexConfig from "../knexfile.js";
 
