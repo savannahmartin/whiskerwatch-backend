@@ -1,7 +1,8 @@
 import knex from "knex";
 import knexConfig from "../knexfile.js";
 
-const db = knex(knexConfig.development);
+const environment = process.env.NODE_ENV || "development";
+const db = knex(knexConfig[environment]);
 
 // Get all active pets
 export const getAllPets = async (req, res) => {
@@ -40,6 +41,7 @@ export const addPet = async (req, res) => {
 
 		const [newPetId] = await db("pets").insert({ name, species, breed, age, notes });
 
+		// Fetch the newly inserted pet
 		const newPet = await db("pets").where({ id: newPetId }).first();
 
 		res.status(201).json(newPet);
@@ -64,6 +66,7 @@ export const updatePet = async (req, res) => {
 			.where({ id: petId })
 			.update({ name, species, breed, age, notes });
 
+		// Fetch the updated pet
 		const updatedPet = await db("pets").where({ id: petId }).first();
 
 		res.json(updatedPet);
@@ -77,11 +80,13 @@ export const archivePet = async (req, res) => {
 	try {
 		const { petId } = req.params;
 
+		// Check if the pet exists
 		const pet = await db("pets").where({ id: petId }).first();
 		if (!pet) {
 			return res.status(404).json({ message: "Pet not found" });
 		}
 
+		// Archive the pet and its behaviors
 		await db("pets").where({ id: petId }).update({ status: "archived" });
 		await db("behaviors").where({ pet_id: petId }).update({ status: "archived" });
 
