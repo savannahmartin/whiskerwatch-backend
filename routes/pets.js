@@ -13,7 +13,6 @@ router
 	.route("/:petId")
     .get(petController.getPetById)
     .put(authenticateUser, petController.updatePet)
-    .delete(authenticateUser, petController.deletePet);
 	
 router
 	.route("/archived")
