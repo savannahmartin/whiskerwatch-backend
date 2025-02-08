@@ -10,11 +10,13 @@ export default {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
     },
-    migrations: {
-      directory: "./migrations",
-    },
-    seeds: {
-      directory: "./seeds",
-    },
+    migrations: { directory: "./migrations" },
+    seeds: { directory: "./seeds" },
+  },
+  production: {
+    client: "mysql2",
+    connection: process.env.DATABASE_URL,
+    migrations: { directory: "./migrations" },
+    seeds: { directory: "./seeds" },
   },
 };
